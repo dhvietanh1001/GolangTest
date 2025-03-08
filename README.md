@@ -68,6 +68,10 @@ Dự án này bao gồm ba phần chính:
 - Kết quả sẽ được lưu vào cơ sở dữ liệu.
 
 
+
+https://github.com/user-attachments/assets/b9f3ef5f-e038-4b75-b8f1-bf73dbc85a25
+
+
 ---
 
 ## Hình Ảnh Minh Họa
