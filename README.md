@@ -12,7 +12,7 @@ Dự án này bao gồm ba phần chính:
 
 Để cài đặt dự án, bạn cần có các công cụ sau:
 
-- **Golang** (phiên bản 1.16 trở lên)
+- **Golang** 
 - **PostgreSQL**
 
 ---
