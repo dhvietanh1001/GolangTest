@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI automation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<!-- Wrapper chính -->
+<div class="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg flex flex-col">
+    <h1 class="text-2xl font-bold mb-6 text-center">Automation</h1>
+
+    <!-- Khu vực hiển thị tin nhắn -->
+    <div id="chat-box" class="flex flex-col space-y-3 p-4 border rounded bg-gray-50 overflow-y-auto" style="max-height: 70vh;">
+        <!-- Các tin nhắn sẽ hiển thị ở đây -->
+    </div>
+
+    <!-- Nút bắt đầu -->
+    <div class="mt-4 flex items-center justify-center">
+        <button onclick="sendPrompt()" class="bg-blue-500 text-white px-6 py-2 rounded-lg">Bắt đầu</button>
+    </div>
+</div>
+
+<script>
+    async function sendPrompt() {
+        const chatBox = document.getElementById("chat-box");
+        const fixedMessage = "a"; // Nội dung cố định luôn là "a"
+        let currentStep = 1;
+
+        try {
+            while (currentStep <= 3) {
+                // Gửi yêu cầu đến backend với từng "step" và nội dung cố định
+                const response = await fetch("/api/chat-step", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ step: String(currentStep), message: fixedMessage }),
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    appendMessage("bot", `Lỗi: ${data.error}`, "text-red-500");
+                    return; // Dừng nếu có lỗi
+                }
+
+                // Hiển thị "promot" từ bot
+                await typeEffect("user", data.prompt);
+
+                // Hiển thị "response" từ AI
+                await typeEffect("bot", data.response);
+
+                // Tăng bước lên để gửi yêu cầu tiếp theo
+                currentStep++;
+            }
+        } catch (error) {
+            appendMessage("bot", "Lỗi kết nối đến server!", "text-red-500");
+        }
+    }
+
+    function showTypingIndicator() {
+        const chatBox = document.getElementById("chat-box");
+
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "p-2 rounded-lg inline-block bg-gray-200 self-start typing-indicator";
+        typingDiv.innerText = "...";
+
+        chatBox.appendChild(typingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        return typingDiv;
+    }
+
+    async function typeEffect(sender, message, additionalClass = "", typingSpeed = 35) {
+        return new Promise((resolve) => {
+            const chatBox = document.getElementById("chat-box");
+
+            let typingIndicator = null;
+            if (sender === "bot") {
+                typingIndicator = showTypingIndicator();
+            }
+
+            setTimeout(() => {
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `p-3 rounded-lg inline-block max-w-lg ${
+                    sender === "user"
+                        ? "bg-blue-500 text-white self-end"
+                        : "bg-gray-200 text-gray-800 self-start"
+                } ${additionalClass}`;
+                messageDiv.style.whiteSpace = "pre-wrap";
+                chatBox.appendChild(messageDiv);
+
+                let currentIndex = 0;
+
+                const typingInterval = setInterval(() => {
+                    messageDiv.innerHTML += message[currentIndex];
+                    currentIndex++;
+
+                    if (currentIndex === message.length) {
+                        clearInterval(typingInterval);
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                        resolve();
+                    }
+                }, typingSpeed);
+            }, typingSpeed);
+        });
+    }
+
+    function appendMessage(sender, message, additionalClass = "") {
+        const chatBox = document.getElementById("chat-box");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `p-3 rounded-lg inline-block max-w-lg ${
+            sender === "user"
+                ? "bg-blue-500 text-white self-end"
+                : "bg-gray-200 text-gray-800 self-start"
+        } ${additionalClass}`;
+        messageDiv.style.whiteSpace = "pre-wrap";
+        messageDiv.innerText = message;
+
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>

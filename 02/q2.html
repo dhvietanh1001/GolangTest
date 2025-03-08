@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSML Generator</title>
+</head>
+<body>
+    <select id="voiceA">
+        <option value="" selected disabled hidden>Voice A</option>
+        <option value="en-US-AndrewMultilingualNeural">en-US-AndrewMultilingualNeural</option>
+        <option value="en-US-ChristopherNeural">en-US-ChristopherNeural</option>
+        <option value="en-US-EricNeural">en-US-EricNeural</option>
+        <option value="vi-VN-HoaiMyNeural">vi-VN-HoaiMyNeural</option>
+        <option value="vi-VN-NamMinhNeural">vi-VN-NamMinhNeural</option>
+    </select>
+
+    <select id="voiceB">
+        <option value="" selected disabled hidden>Voice B</option>
+        <option value="en-US-AndrewMultilingualNeural">en-US-AndrewMultilingualNeural</option>
+        <option value="en-US-ChristopherNeural">en-US-ChristopherNeural</option>
+        <option value="en-US-EricNeural">en-US-EricNeural</option>
+        <option value="vi-VN-HoaiMyNeural">vi-VN-HoaiMyNeural</option>
+        <option value="vi-VN-NamMinhNeural">vi-VN-NamMinhNeural</option>
+    </select>
+
+    <button onclick="generateSSML()">Xuất SSML</button>
+
+    <br><br>
+
+    <textarea id="dialogue" rows="8" cols="50" placeholder="Nhập hội thoại, mỗi dòng là một câu (A: hoặc B:)"></textarea>
+
+    <br><br>
+
+    <textarea id="ssmlOutput" rows="10" cols="50" readonly></textarea>
+    <br>
+    <button onclick="copySSML()">Sao chép SSML</button>
+
+    <script>
+        function generateSSML() {
+            const voiceA = document.getElementById("voiceA").value;
+            const voiceB = document.getElementById("voiceB").value;
+            const dialogue = document.getElementById("dialogue").value.trim().split("\n");
+
+            if (!voiceA || !voiceB) {
+                alert("Vui lòng chọn cả hai giọng nói!");
+                return;
+            }
+
+            if (dialogue.length < 2) {
+                alert("Hội thoại cần ít nhất 2 câu!");
+                return;
+            }
+
+            let ssmlContent = `<speak xml:lang="vi-VN">\n`;
+            dialogue.forEach(line => {
+                let voice = "";
+                let text = line.trim();
+
+                if (text.startsWith("A:")) {
+                    voice = voiceA;
+                    text = text.replace("A:", "").trim();
+                } else if (text.startsWith("B:")) {
+                    voice = voiceB;
+                    text = text.replace("B:", "").trim();
+                } else {
+                    alert("Mỗi dòng hội thoại cần bắt đầu bằng 'A:' hoặc 'B:'!");
+                    return;
+                }
+
+                ssmlContent += `  <voice name="${voice}">${text}</voice>\n`;
+            });
+            ssmlContent += `</speak>`;
+
+            document.getElementById("ssmlOutput").value = ssmlContent;
+        }
+
+        function copySSML() {
+            const ssmlText = document.getElementById("ssmlOutput").value;
+            if (!ssmlText) {
+                alert("Không có nội dung để sao chép!");
+                return;
+            }
+
+            navigator.clipboard.writeText(ssmlText)
+                .then(() => alert("Đã sao chép SSML!"))
+                .catch(err => alert("Lỗi khi sao chép!"));
+        }
+    </script>
+</body>
+</html>
