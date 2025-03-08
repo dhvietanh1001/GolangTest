@@ -74,15 +74,4 @@ https://github.com/user-attachments/assets/b9f3ef5f-e038-4b75-b8f1-bf73dbc85a25
 
 ---
 
-## Hình Ảnh Minh Họa
-
-Dưới đây là một số hình ảnh minh họa cho từng phần của dự án:
-
-### Giao Diện Call Groq API
-![Ảnh minh họa](https://github.com/user-attachments/assets/d6c54ce1-160f-4413-8fd6-194c49db5b92)
-
-### Giao Diện Sinh File SSML
-![Ảnh minh họa](https://github.com/user-attachments/assets/ffa4144a-6086-418f-81c9-0885024c96a5)
-
----
 
